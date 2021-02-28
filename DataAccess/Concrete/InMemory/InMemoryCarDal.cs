@@ -1,8 +1,10 @@
 ﻿using DataAccess.Abstract;
+using DataAccess.Abstract.EntitiesDals;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace DataAccess.Concrete.InMemory
@@ -20,33 +22,33 @@ namespace DataAccess.Concrete.InMemory
             new Car{CarId=3,BrandId=2,CarName="Araç3",ColorId=3,DailyPrice=200,ModelId=2,ModelYear=2015,Description=""}
             };
         }
-        public void Add(List<Car> car)
+
+        public void Add(Car entity)
         {
-            _car.AddRange(car);
+            _car.Add(entity);
         }
 
-        public void Delete(Car car)
+        public void Delete(Car entity)
         {
-            Car CarToDelete=null;
-            CarToDelete = _car.SingleOrDefault(p => p.CarId == car.CarId);
+            Car CarToDelete = null;
+            CarToDelete = _car.SingleOrDefault(p => p.CarId == entity.CarId);
             _car.Remove(CarToDelete);
         }
 
-        public List<Car> GetAll()
+        public Car Get(Expression<Func<Car, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Car> GetAll(Expression<Func<Car, bool>> filter = null)
         {
             return _car;
         }
 
-        public List<Car> GetByBrand(int BrandId)
+        public void Update(Car entity, Car CarToUpdate)
         {
-            return _car.Where(p => p.BrandId == BrandId).ToList();
-        }
-
-        public void Update(Car car,Car CarToUpdate)
-        {
-            
-            Car CarTemp = _car.SingleOrDefault(p => p.CarId == car.CarId);
-            CarToUpdate= _car.SingleOrDefault(p => p.CarId == CarToUpdate.CarId);
+            Car CarTemp = _car.SingleOrDefault(p => p.CarId == entity.CarId);
+            CarToUpdate = _car.SingleOrDefault(p => p.CarId == CarToUpdate.CarId);
             CarToUpdate.CarId = CarTemp.CarId;
             CarToUpdate.CarName = CarTemp.CarName;
             CarToUpdate.BrandId = CarTemp.BrandId;
@@ -55,7 +57,15 @@ namespace DataAccess.Concrete.InMemory
             CarToUpdate.ModelId = CarTemp.ModelId;
             CarToUpdate.ModelYear = CarTemp.ModelYear;
             CarToUpdate.Description = CarTemp.Description;
-                       
+        }
+        public List<Car> GetByBrand(int BrandId)
+        {
+            return _car.Where(p => p.BrandId == BrandId).ToList();
+        }
+
+        public void Update(Car entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

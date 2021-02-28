@@ -1,8 +1,10 @@
 ﻿using Business.Concrete;
+using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleUI
 {
@@ -10,74 +12,186 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            Car car4 = new Car();
-            car4.CarId = 4;
-            car4.BrandId = 2;
-            car4.CarName = "Araç4";
-            car4.ColorId = 2;
-            car4.DailyPrice = 150;
-            car4.Description = "";
-            car4.ModelId = 2;
-            car4.ModelYear = 2020;
+            Car car = new Car();
 
-            Car car5 = new Car();
-            car5.CarId = 5;
-            car5.BrandId = 1;
-            car5.CarName = "Araç5";
-            car5.ColorId = 5;
-            car5.DailyPrice = 250;
-            car5.Description = "";
-            car5.ModelId = 4;
-            car5.ModelYear = 2019;
+            CarManager carManager = new CarManager(new EfCarDal());
 
-            Car car6 = new Car();
-            car6.CarId = 6;
-            car6.BrandId = 2;
-            car6.CarName = "Araç6";
-            car6.ColorId = 5;
-            car6.DailyPrice = 250;
-            car6.Description = "";
-            car6.ModelId = 4;
-            car6.ModelYear = 2019;
-
-            CarManager carManager = new CarManager(new InMemoryCarDal());
-
-            List<Car> cars = new List<Car>() { car4, car5, car6 };
-            
-            carManager.Add(cars);
+            Console.WriteLine("-------Care-------");
+            Console.WriteLine("Ne yapmak istersiniz?");
+            Console.WriteLine(" 1- Araçları Listele \n 2- Yeni Araç Ekle \n 3- Araç GÜncelle \n 4- Araç Sil");
+            Console.WriteLine("-------Care-------");
+            Console.Write("Seçim:");
+            var choose = Convert.ToInt32(Console.ReadLine());
             
 
-            foreach (var car in carManager.GetAll())
+            switch (choose)
             {
-                Console.WriteLine(car.CarName);
-                
+                case 1:
+                    Console.WriteLine("-------Care-------");
+                    Console.WriteLine("Ne yapmak istersiniz?");
+                    Console.WriteLine(" 1- Tüm Araçları Listele \n 2- Araçları Markalarına Göre Listele \n 3- Araçları Renklerine Göre Listele ");
+                    Console.WriteLine("-------Care-------");
+                    Console.Write("Seçim:");
+                    var Detail = Convert.ToInt32(Console.ReadLine());
+
+                    switch (Detail)
+                    {
+                        case 1:
+                            Console.WriteLine("-------Care-------");
+                            GetCars(carManager);
+                            Console.WriteLine("-------Care-------");
+                            break;
+                        case 2:
+                            Console.WriteLine("-------Care-------");
+                            GetAllByBrandId(carManager);
+                            Console.WriteLine("-------Care-------");
+                            Console.Write("Kaç Numaralı Id: ");
+                            var BrandId = Convert.ToInt32(Console.ReadLine());
+                            Console.WriteLine("-------Care-------"); 
+                            GetCarsByBrandId(BrandId, carManager);
+                            Console.WriteLine("-------Care-------");
+                            break;
+                        case 3:
+                            Console.WriteLine("-------Care-------");
+                            GetAllByColorId(carManager);
+                            Console.WriteLine("-------Care-------");
+                            Console.Write("Kaç Numaralı Id: ");
+                            var ColorId = Convert.ToInt32(Console.ReadLine());
+                            Console.WriteLine("-------Care-------");
+                            GetCarsbyColorId(carManager, ColorId);
+                            Console.WriteLine("-------Care-------");
+                            break;
+                    }
+                    break;
+
+                case 2:
+                    Console.WriteLine("-------Care-------");
+                    GetCars(carManager);
+                    Console.WriteLine("-------Care-------");
+                    Console.Write("Kaçıncı Araç (Araçx şeklinde belirtin):");
+                    car.CarName = Console.ReadLine();
+                    Console.Write("Marka Id:");
+                    car.BrandId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Model Id:");
+                    car.ModelId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Renk Id:");
+                    car.ColorId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Model Yılı:");
+                    car.ModelYear = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Günlük Fiyat:");
+                    car.DailyPrice = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Açıklama:");
+                    AddCar(car, carManager);
+                    break;
+
+                case 3:
+
+                    Console.WriteLine("-------Care-------");
+                    GetCars(carManager);
+                    Console.WriteLine("-------Care-------");
+                    Console.Write("Araç Id:");
+                    car.CarId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Kaçıncı Araç (Araçx şeklinde belirtin):");
+                    car.CarName = Console.ReadLine();
+                    Console.Write("Marka Id:");
+                    car.BrandId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Model Id:");
+                    car.ModelId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Renk Id:");
+                    car.ColorId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Model Yılı:");
+                    car.ModelYear = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Günlük Fiyat:");
+                    car.DailyPrice = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Açıklama:");
+                    car.Description = Console.ReadLine();
+                    UpdateCar(car, carManager);
+                    break;
+                case 4:
+                    Console.WriteLine("-------Care-------");
+                    GetCars(carManager);
+                    Console.WriteLine("-------Care-------");
+                    Console.Write("Araç Id:");
+                    car.CarId = Convert.ToInt32(Console.ReadLine());
+                    DeleteCar(car, carManager);
+                    break;
             }
-            Console.WriteLine("------------");
-
-            
-            foreach (var car in carManager.GetByBrand(1))
-            {
-                Console.WriteLine(car.CarName);
-
-            }
-            Console.WriteLine("------------");
 
 
-            carManager.Update(car5,car6);
-            foreach (var car in carManager.GetAll())
-            {
-                Console.WriteLine(car.CarName);
 
-            }
-            Console.WriteLine("------------");
-
-            carManager.Delete(car4);
-            foreach (var car in carManager.GetAll())
-            {
-                Console.WriteLine(car.CarName);
-
-            }
-            Console.WriteLine("------------");
         }
+
+        private static void GetCarsbyColorId(CarManager carManager, int ColorId)
+        {
+            foreach (var carr in carManager.GetByColor(ColorId))
+            {
+                Console.WriteLine(carr.CarName);
+            }
+        }
+
+        private static void GetAllByColorId(CarManager carManager)
+        {
+            foreach (var carr in carManager.GetAll())
+            {
+                Console.WriteLine(carr.ColorId);
+            }
+        }
+
+        private static void GetAllByBrandId(CarManager carManager)
+        {
+            foreach (var carr in carManager.GetAll())
+            {
+                Console.WriteLine(carr.BrandId);
+            }
+        }
+
+        private static void GetCarsByBrandId(int brandId, CarManager carManager)
+        {
+            foreach (var carr in carManager.GetByBrand(brandId))
+            {
+                Console.WriteLine(carr.CarName);
+            }
+        }
+
+        private static void GetCars(CarManager carManager)
+        {
+            foreach (var car in carManager.GetAll())
+            {
+                Console.WriteLine("{0} id numaralı {1} isimli araç",car.CarId,car.CarName);
+            }
+
+        }
+
+        private static void DeleteCar(Car car, CarManager carManager)
+        {
+
+            Car car1 = carManager.GetAll().SingleOrDefault(p => p.CarId == car.CarId);
+            Console.WriteLine("Araç Siliniyor...");
+            carManager.Delete(car1);
+            Console.WriteLine("-------Care-------");
+            GetCars(carManager);
+            Console.WriteLine("-------Care-------");
+        }
+
+        private static void UpdateCar(Car car1, CarManager carManager)
+        {
+            Console.WriteLine("Araç Güncelleniyor...");
+            carManager.Update(car1);
+            Console.WriteLine("-------Care-------");
+            GetCars(carManager);
+            Console.WriteLine("-------Care-------");
+        }
+
+        private static void AddCar(Car car1, CarManager carManager)
+        {
+            Console.WriteLine("Araç Kaydediliyor...");
+            carManager.Add(car1);
+            Console.WriteLine("-------Care-------");
+            GetCars(carManager);
+            Console.WriteLine("-------Care-------");
+
+        }
+
+       
     }
 }

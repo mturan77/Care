@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Abstract.EntitiesDals;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,22 @@ namespace Business.Concrete
             _carDal = carDal;
         }
 
-        public void Add(List<Car> car)
+        public void Add(Car car)
         {
-            _carDal.Add(car);
+            if (car.CarName.Length>2&&car.DailyPrice>0)
+            {
+                _carDal.Add(car);
+            }
+            else
+            {
+                throw new Exception();
+            }
+            
+        }
+
+        public void Add(List<Car> carList)
+        {
+            throw new NotImplementedException();
         }
 
         public void Delete(Car car)
@@ -30,15 +44,26 @@ namespace Business.Concrete
         {
             return _carDal.GetAll();
         }
-
+        
         public List<Car> GetByBrand(int BrandId)
         {
-            return _carDal.GetByBrand(BrandId);
+            return _carDal.GetAll(p=>p.BrandId==BrandId);
         }
 
-        public void Update(Car car,Car carToUpdate)
+        public List<Car> GetByColor(int ColorId)
         {
-            _carDal.Update(car,carToUpdate);
+            return _carDal.GetAll(p => p.ColorId == ColorId);
+        }
+        
+        public void Update(Car car)
+        {
+            _carDal.Update(car);
+                //.Update(car,carToUpdate);
+        }
+
+        Car ICarService.GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }
